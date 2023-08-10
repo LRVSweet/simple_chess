@@ -5,6 +5,8 @@ legal_colors = ["white", "black"]
 black_pieces = {}
 white_pieces = {}
 chess_board = {}
+square_objects = {}
+square_objects_for_viz = [[] for i in range(8)]
 game = []
 first_rank_start = ["a_rook", "b_knight", "c_bishop", "queen", "king", "f_bishop", "g_knight", "h_rook"]
 second_rank_start = ["a_pawn", "b_pawn", "c_pawn", "d_pawn", "e_pawn", "f_pawn", "g_pawn", "h_pawn"]
@@ -15,6 +17,29 @@ for column in columns:
     for row in rows:
         chess_board[column + str(row)] = ""
 
+# define square class - squares on the chessboard
+class Square:
+
+    def __init__(self, name):
+        self.name = name
+        self.file = name[0]
+        self.rank = name[1]
+        self.file_index = columns.index(self.file)
+        self.rank_index = rows.index(int(self.rank))
+        self.symbol = "."
+        self.occupant = ""
+        square_objects[self.name] = self
+        square_objects_for_viz[-self.rank_index + 7].append(self) # assembles square_objects_for_viz with eigth rank list at index 0, proceeding in reverse order to subsequent ranks (i.e. [[rank_8],[rank_7],...,[rank_1]]).  This facilitates printing the visualiztion.
+
+    def __repr__(self):
+        return self.name
+
+    def change_occupant(self, new_occupant):
+        self.occupant = new_occupant
+        self.symbol = new_occupant.abbreviation
+
+    def remove_occupant(self):
+        self.symbol = "."
 
 # define pawn class
 class Pawn:
@@ -24,6 +49,11 @@ class Pawn:
         self.name = name
         self.color = color  # set color
         chess_board[homesquare] = [self, color, self.piece]  # place piece on square by updating chess_board dictionary
+        if self.color == "white":
+            self.abbreviation = "P"
+        else:
+            self.abbreviation = "p"
+        square_objects[homesquare].change_occupant(self)
 
         self.square = homesquare  # set starting square
 
@@ -32,9 +62,11 @@ class Pawn:
 
     def move(self, destination_square):
         chess_board[self.square] = ""  # clear chess_board value for piece's previous square
+        square_objects[self.square].remove_occupant()
         self.square = destination_square  # set new square attribute
         chess_board[self.square] = [self, self.color, self.piece]  # update chess_board value for destination square
-
+        square_objects[destination_square].change_occupant(self)
+        
     def get_captured(self, capturing_piece):
         print(
             "A {color_captured} {captured_piece} on {captured_square} was captured by a {color_capturing} {capturing_piece}.".format(
@@ -52,6 +84,11 @@ class Rook:
         self.name = name
         self.color = color  # set color
         chess_board[homesquare] = [self, color, self.piece]  # place piece on square by updating chess_board dictionary
+        if self.color == "white":
+            self.abbreviation = "R"
+        else:
+            self.abbreviation = "r"
+        square_objects[homesquare].change_occupant(self)
 
         self.square = homesquare  # set starting square
 
@@ -60,8 +97,10 @@ class Rook:
 
     def move(self, destination_square):
         chess_board[self.square] = ""  # clear chess_board value for piece's previous square
-        self.square = destination_square  # set new destination square
+        square_objects[self.square].remove_occupant()
+        self.square = destination_square  # set new square attribute
         chess_board[self.square] = [self, self.color, self.piece]  # update chess_board value for destination square
+        square_objects[destination_square].change_occupant(self)
 
     def get_captured(self, capturing_piece):
         print(
@@ -80,6 +119,11 @@ class Knight:
         self.name = name
         self.color = color  # set color
         chess_board[homesquare] = [self, color, self.piece]  # place piece on square by updating chess_board dictionary
+        if self.color == "white":
+            self.abbreviation = "N"
+        else:
+            self.abbreviation = "n"
+        square_objects[homesquare].change_occupant(self)
 
         self.square = homesquare  # set starting square
 
@@ -88,8 +132,10 @@ class Knight:
 
     def move(self, destination_square):
         chess_board[self.square] = ""  # clear chess_board value for piece's previous square
-        self.square = destination_square  # set new destination square
+        square_objects[self.square].remove_occupant()
+        self.square = destination_square  # set new square attribute
         chess_board[self.square] = [self, self.color, self.piece]  # update chess_board value for destination square
+        square_objects[destination_square].change_occupant(self)
 
     def get_captured(self, capturing_piece):
         print(
@@ -108,6 +154,11 @@ class Bishop:
         self.name = name
         self.color = color  # set color
         chess_board[homesquare] = [self, color, self.piece]  # place piece on square by updating chess_board dictionary
+        if self.color == "white":
+            self.abbreviation = "B"
+        else:
+            self.abbreviation = "b"
+        square_objects[homesquare].change_occupant(self)
 
         self.square = homesquare  # set starting square
 
@@ -116,8 +167,10 @@ class Bishop:
 
     def move(self, destination_square):
         chess_board[self.square] = ""  # clear chess_board value for piece's previous square
-        self.square = destination_square  # set new destination square
+        square_objects[self.square].remove_occupant()
+        self.square = destination_square  # set new square attribute
         chess_board[self.square] = [self, self.color, self.piece]  # update chess_board value for destination square
+        square_objects[destination_square].change_occupant(self)
 
     def get_captured(self, capturing_piece):
         print(
@@ -136,6 +189,11 @@ class King:
         self.name = name
         self.color = color  # set color
         chess_board[homesquare] = [self, color, self.piece]  # place piece on square by updating chess_board dictionary
+        if self.color == "white":
+            self.abbreviation = "K"
+        else:
+            self.abbreviation = "k"
+        square_objects[homesquare].change_occupant(self)
 
         self.square = homesquare  # set starting square
 
@@ -144,8 +202,10 @@ class King:
 
     def move(self, destination_square):
         chess_board[self.square] = ""  # clear chess_board value for piece's previous square
-        self.square = destination_square  # set new destination square
+        square_objects[self.square].remove_occupant()
+        self.square = destination_square  # set new square attribute
         chess_board[self.square] = [self, self.color, self.piece]  # update chess_board value for destination square
+        square_objects[destination_square].change_occupant(self)
 
     def get_captured(self, capturing_piece):
         print(
@@ -164,6 +224,11 @@ class Queen:
         self.name = name
         self.color = color  # set color
         chess_board[homesquare] = [self, color, self.piece]  # place piece on square by updating chess_board dictionary
+        if self.color == "white":
+            self.abbreviation = "Q"
+        else:
+            self.abbreviation = "q"
+        square_objects[homesquare].change_occupant(self)
 
         self.square = homesquare  # set starting square
 
@@ -172,8 +237,10 @@ class Queen:
 
     def move(self, destination_square):
         chess_board[self.square] = ""  # clear chess_board value for piece's previous square
-        self.square = destination_square  # set new destination square
+        square_objects[self.square].remove_occupant()
+        self.square = destination_square  # set new square attribute
         chess_board[self.square] = [self, self.color, self.piece]  # update chess_board value for destination square
+        square_objects[destination_square].change_occupant(self)
 
     def get_captured(self, capturing_piece):
         print(
@@ -183,6 +250,72 @@ class Queen:
                 capturing_piece=capturing_piece.piece))  # print notice that piece was captured, by what, and where
         self.square = "captured"  # set destination to captured to indicate piece is no longer in play
 
+
+# build square objects for entire chessboard
+a1 = Square("a1")
+b1 = Square("b1")
+c1 = Square("c1")
+d1 = Square("d1")
+e1 = Square("e1")
+f1 = Square("f1")
+g1 = Square("g1")
+h1 = Square("h1")
+a2 = Square("a2")
+b2 = Square("b2")
+c2 = Square("c2")
+d2 = Square("d2")
+e2 = Square("e2")
+f2 = Square("f2")
+g2 = Square("g2")
+h2 = Square("h2")
+a3 = Square("a3")
+b3 = Square("b3")
+c3 = Square("c3")
+d3 = Square("d3")
+e3 = Square("e3")
+f3 = Square("f3")
+g3 = Square("g3")
+h3 = Square("h3")
+a4 = Square("a4")
+b4 = Square("b4")
+c4 = Square("c4")
+d4 = Square("d4")
+e4 = Square("e4")
+f4 = Square("f4")
+g4 = Square("g4")
+h4 = Square("h4")
+a5 = Square("a5")
+b5 = Square("b5")
+c5 = Square("c5")
+d5 = Square("d5")
+e5 = Square("e5")
+f5 = Square("f5")
+g5 = Square("g5")
+h5 = Square("h5")
+a6 = Square("a6")
+b6 = Square("b6")
+c6 = Square("c6")
+d6 = Square("d6")
+e6 = Square("e6")
+f6 = Square("f6")
+g6 = Square("g6")
+h6 = Square("h6")
+a7 = Square("a7")
+b7 = Square("b7")
+c7 = Square("c7")
+d7 = Square("d7")
+e7 = Square("e7")
+f7 = Square("f7")
+g7 = Square("g7")
+h7 = Square("h7")
+a8 = Square("a8")
+b8 = Square("b8")
+c8 = Square("c8")
+d8 = Square("d8")
+e8 = Square("e8")
+f8 = Square("f8")
+g8 = Square("g8")
+h8 = Square("h8")
 
 # build first rank for white
 a_rook_white = Rook("a_rook_white", "white", "a1")
@@ -222,8 +355,16 @@ pawn_four_black = Pawn("pawn_four_black", "black", "d7")
 pawn_five_black = Pawn("pawn_five_black", "black", "e7")
 pawn_six_black = Pawn("pawn_six_black", "black", "f7")
 pawn_seven_black = Pawn("pawn_seven_black", "black", "g7")
-pawn_eight_black = Pawn("pawn_eight_black", "black", "h8")
+pawn_eight_black = Pawn("pawn_eight_black", "black", "h7")
 
+# function for creating printable chessboard visualization
+def visualize_chessboard():
+    for rank_list in square_objects_for_viz:
+        rank_visualization = str(-square_objects_for_viz.index(rank_list) + 8)
+        for square in rank_list:
+            rank_visualization += " " + square.symbol
+        print(rank_visualization)
+    print("  a b c d e f g h")
 
 # function for creating and outputting pgn of game
 def pgn_out():
@@ -242,6 +383,8 @@ def pgn_out():
 
 
 def single_move(color):
+    visualize_chessboard()
+    
     starting_square = input("{color} player, where is the piece that you would like to move?".format(
         color=color.title()))  # get current location of piece to be moved
 
@@ -276,13 +419,17 @@ def single_move(color):
             pgn_destination_code = destination_square  # make destination square end of pgn code
 
         game.append(pgn_piece_code + pgn_destination_code)  # append complete pgn code to the list game
-        print(game)
 
         return ""
 
 
 # function for continuous play
 def play_game():
+    print(
+        """Welcome to simple_chess!  Simple_chess allows you to play chess games in the terminal.  When you are done playing, just type "end game" on your turn.  Have fun!
+        """
+        )
+
     single_move("white")
 
     while True:  # will continue looping until break keyword reached
@@ -300,3 +447,4 @@ def play_game():
 
 
 play_game()
+
