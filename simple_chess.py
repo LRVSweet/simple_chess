@@ -1,15 +1,20 @@
-# define chess board rows and columns
+# create list of chess board rows and columns
 rows = [i + 1 for i in range(8)]
 columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
-legal_colors = ["white", "black"]
-black_pieces = {}
-white_pieces = {}
+
+# create empty chess_board dictionary.  Keys will be square names, values will be piece names
 chess_board = {}
+
+# create empty dictionary for square objects where keys will be square names and values will be square objects
 square_objects = {}
+
+# create a list of 8 empty lists, one for each row of chessboard.  First list will be 8th rank, second will be 7th, etc.  Will be populated with square objects in order conducive to printing their symbols for visualization
 square_objects_for_viz = [[] for i in range(8)]
+
+# empty list that will be populated with the pgn code for each move made
 game = []
-first_rank_start = ["a_rook", "b_knight", "c_bishop", "queen", "king", "f_bishop", "g_knight", "h_rook"]
-second_rank_start = ["a_pawn", "b_pawn", "c_pawn", "d_pawn", "e_pawn", "f_pawn", "g_pawn", "h_pawn"]
+
+# dictionary of each piece's pgn abbreviation, used for building game list
 piece_abbreviations = {"pawn": "", "rook": "R", "knight": "N", "bishop": "B", "king": "K", "queen": "Q"}
 
 # create chess_board dictionary with key for each square
@@ -34,10 +39,12 @@ class Square:
     def __repr__(self):
         return self.name
 
+# method for adding a new occupant to a square
     def change_occupant(self, new_occupant):
         self.occupant = new_occupant
         self.symbol = new_occupant.abbreviation
 
+# method for removing an occupant from a square
     def remove_occupant(self):
         self.symbol = "."
 
@@ -360,11 +367,11 @@ pawn_eight_black = Pawn("pawn_eight_black", "black", "h7")
 # function for creating printable chessboard visualization
 def visualize_chessboard():
     for rank_list in square_objects_for_viz:
-        rank_visualization = str(-square_objects_for_viz.index(rank_list) + 8)
+        rank_visualization = str(-square_objects_for_viz.index(rank_list) + 8) # identifies row number and adds to rank_visualization string
         for square in rank_list:
-            rank_visualization += " " + square.symbol
-        print(rank_visualization)
-    print("  a b c d e f g h")
+            rank_visualization += " " + square.symbol # adds a space and then the symbol of each square in rank_list to rank_visualization string
+        print(rank_visualization) # prints rank_visualization
+    print("  a b c d e f g h") # prints file names at bottom of chessboard visualization
 
 # function for creating and outputting pgn of game
 def pgn_out():
@@ -385,8 +392,7 @@ def pgn_out():
 def single_move(color):
     visualize_chessboard()
     
-    starting_square = input("{color} player, where is the piece that you would like to move?".format(
-        color=color.title()))  # get current location of piece to be moved
+    starting_square = input("{color} player, where is the piece that you would like to move?".format(color=color.title()))  # get current location of piece to be moved
 
     if starting_square == "end game":  # end game if player responds 'end game'
         print("Good game!  Here's the pgn of this chess game:")
@@ -445,6 +451,4 @@ def play_game():
 
     print("End of game")
 
-
 play_game()
-
